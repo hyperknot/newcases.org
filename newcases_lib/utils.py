@@ -1,13 +1,21 @@
-import requests
+import json
+import pathlib
 
-from newcases_lib import config
+# def download_url(url: str, filename: str):
+#     r = requests.get(url)
+#     r.raise_for_status()
+#
+#     file_path = config.download_cache / filename
+#
+#     with open(file_path) as outfile:
+#         outfile.write(r.content)
 
 
-def download_url(url: str, filename: str):
-    r = requests.get(url)
-    r.raise_for_status()
+def read_json(file_path: pathlib.Path):
+    with file_path.open() as infile:
+        return json.load(infile)
 
-    file_path = config.download_cache / filename
 
-    with open(file_path) as outfile:
-        outfile.write(r.content)
+def write_json(file_path: pathlib.Path, data, indent: bool = None):
+    with file_path.open('w') as outfile:
+        json.dump(data, outfile, ensure_ascii=False, indent=indent, allow_nan=False)

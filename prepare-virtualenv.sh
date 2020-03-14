@@ -6,5 +6,5 @@ python3 -m venv venv
 
 source venv/bin/activate
 
-pip install -e newcases_lib
+pip install -e .
 

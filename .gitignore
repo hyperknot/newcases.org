@@ -2,11 +2,11 @@
 __pycache__/
 node_modules/
 
-/.idea
 /venv
 /tmp.csv
 
 .DS_Store
 /public/build
-/map_convert_tools/geojson
-/map_convert_tools/shp
+/geo_tools/geojson
+/geo_tools/shp
+/.idea/workspace.xml
