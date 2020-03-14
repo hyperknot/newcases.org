@@ -34,27 +34,35 @@ for feature in subunits:
     subunit_name = prop['subunit']
     subunit_iso = prop['su_a3']
 
-    # if country_name != 'Italy':
+    # if country_name not in ['Italy', 'Germany', 'France']:
     #     continue
 
     levels.setdefault(country_name, {'iso0': country_iso, 'sub1': {}})
 
     sub1 = levels[country_name]['sub1']
-    sub1.setdefault(unit_name, {'iso1': unit_iso, 'sub2': {}})
+    sub1.setdefault(unit_name, {'iso1': unit_iso, 'src': 'unit', 'sub2': {}})
 
     sub2 = sub1[unit_name]['sub2']
-    sub2.setdefault(subunit_name, {'iso2': subunit_iso})
+    sub2.setdefault(subunit_name, {'iso2': subunit_iso, 'src': 'subunit'})
 
 # clean up sub2
 for country, country_data in levels.items():
-    for unit1 in country_data['sub1'].values():
-        if len(unit1['sub2']) == 1:
-            unit1.pop('sub2')
+    for data1 in country_data['sub1'].values():
+        if len(data1['sub2']) == 1:
+            del data1['sub2']
 
 # clean up sub1
-# for country, country_data in levels.items():
-#     if len(country_data['sub1']) == 1:
-#         country_data.pop('sub1')
+for country, country_data in levels.items():
+    sub1 = country_data['sub1']
+
+    if len(sub1) != 1:
+        continue
+
+    # we know there is only one element in the dict now
+    sub1_first = list(sub1.values())[0]
+    if 'sub2' not in sub1_first:
+        del country_data['sub1']
+
 
 # elif 'iso_3166_2' in prop:
 #     state_name = prop['name']
@@ -64,4 +72,4 @@ for country, country_data in levels.items():
 #     levels[country_name][state_name].setdefault('-', dict())
 
 
-write_json(pathlib.Path('l2.json'), levels, indent=2)
+write_json(pathlib.Path('level.json'), levels, indent=2)
