@@ -33,6 +33,10 @@ for feature in subunits:
     subunit_name = prop['subunit']
     subunit_iso = prop['su_a3']
 
+    pop = prop['pop_est']
+    if pop < 1000:
+        continue
+
     levels.setdefault(country_name, {'iso0': country_iso, 'sub1': {}})
 
     sub1 = levels[country_name]['sub1']
@@ -64,6 +68,8 @@ for country, country_data in levels.items():
 levels['United States of America']['sub1'] = {}
 levels['Canada']['sub1'] = {}
 levels['Australia']['sub1'] = {}
+
+# TODO Gibraltar missing from 50m
 
 for feature in states:
     prop = feature['properties']
