@@ -4,9 +4,11 @@
     import { onMount } from 'svelte';
 
     export let data;
+    export let period;
     let chart;
 
     const countryEntries = Object.entries(data);
+    const keep = period ? parseInt(period) * -1 : 0;
     const countryData = countryEntries.map(([date, cases], index) => {
       const newCases = index > 0 ? cases - countryEntries[index - 1][1] : parseInt(cases);
       return {
@@ -14,7 +16,7 @@
         cases,
         newCases
       }
-    }).slice(-14);
+    }).slice(keep);
 
     const margin = ({top: 20, right: 0, bottom: 50, left: 40});
 
@@ -56,7 +58,7 @@
       chartSvg.call(tooltip);
 
       chartSvg.append("g")
-          .attr("fill", "#2ed0a8")
+          .attr("fill", "#39f3bb")
         .selectAll("rect")
         .data(countryData)
         .join("rect")
