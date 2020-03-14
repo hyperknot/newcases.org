@@ -45,17 +45,16 @@ for feature in subunits:
     sub2 = sub1[unit_name]['sub2']
     sub2.setdefault(subunit_name, {'iso2': subunit_iso})
 
-# clean up sole units
+# clean up sub2
 for country, country_data in levels.items():
     for unit1 in country_data['sub1'].values():
         if len(unit1['sub2']) == 1:
             unit1.pop('sub2')
 
-# # clean up sole subunits
-# for country, units in levels.items():
-#     print(units)
-# if len(units) == 1:
-#     levels[country] = {}
+# clean up sub1
+# for country, country_data in levels.items():
+#     if len(country_data['sub1']) == 1:
+#         country_data.pop('sub1')
 
 # elif 'iso_3166_2' in prop:
 #     state_name = prop['name']
@@ -65,4 +64,4 @@ for country, country_data in levels.items():
 #     levels[country_name][state_name].setdefault('-', dict())
 
 
-write_json(pathlib.Path('levels.json'), levels, indent=2)
+write_json(pathlib.Path('l2.json'), levels, indent=2)
