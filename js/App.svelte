@@ -1,30 +1,47 @@
 <script>
-	export let name;
+    import Chart from './Chart.svelte'
+    export let data;
+
+    const dataEntries = Object.entries(data);
+
+    const sortedDataEntries = dataEntries.sort(([country1, country1Data], [country2, country2Data]) => {
+      const country1Cases = Object.values(country1Data);
+      const country1maxNumber = parseInt(country1Cases[country1Cases.length - 1]);
+      const country2Cases = Object.values(country2Data);
+      const country2maxNumber = parseInt(country2Cases[country2Cases.length - 1]);
+
+      if (country1maxNumber > country2maxNumber) {
+        return -1;
+      }
+
+      if (country1maxNumber < country2maxNumber) {
+        return 1;
+      }
+
+      return 0;
+    });
+
 </script>
 
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+    <div class="chart-container">
+        {#each sortedDataEntries as dataEntry}
+        <div class="chart-wrapper">
+            <h3>{dataEntry[0]}</h3>
+            <Chart data={dataEntry[1]} />
+        </div>
+        {/each}
+    </div>
 </main>
 
+
 <style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
+	.chart-container {
+	    display: flex;
+	    flex-wrap: wrap;
 	}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
+	.chart-wrapper {
+	    width: 25%;
 	}
 </style>
