@@ -1,4 +1,5 @@
 import csv
+import datetime
 import io
 
 import requests
@@ -19,8 +20,25 @@ def parse_csv(text):
     for record in reader:
         # check for too many keys
         if 'x_restkey' in record:
-            raise ValueError(f'too many items in line {reader.line_num}')
+            raise ValueError(f'Too many items in line {reader.line_num}')
 
         # check for too few keys:
         if 'x_restval' in record.values():
-            raise ValueError(f'too few items in line {reader.line_num}')
+            raise ValueError(f'Too few items in line {reader.line_num}')
+
+    if reader.fieldnames[:4] != ['Province/State', 'Country/Region', 'Lat', 'Long']:
+        raise ValueError('Wrong field names')
+
+    date_map = create_date_map(reader.fieldnames[4:])
+    print(date_map)
+
+
+def create_date_map(fieldnames):
+    date_map = {}
+
+    for fieldname in fieldnames:
+        dt = datetime.datetime.strptime(fieldname, '%m/%d/%y')
+        iso_date = dt.date().isoformat()
+        date_map[fieldname] = iso_date
+
+    return date_map
