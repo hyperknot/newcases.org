@@ -34,20 +34,23 @@ for feature in subunits:
     subunit_name = prop['subunit']
     subunit_iso = prop['su_a3']
 
-    levels.setdefault(country_name, {'iso': country_iso, 'l1': {}})
+    # if country_name != 'Italy':
+    #     continue
 
-    l1 = levels[country_name]['l1']
-    l1.setdefault(unit_name, {'iso': unit_iso, 'l2': {}})
+    levels.setdefault(country_name, {'iso0': country_iso, 'sub1': {}})
 
-    l2 = l1[unit_name]['l2']
-    l2.setdefault(subunit_name, {'iso': subunit_iso})
+    sub1 = levels[country_name]['sub1']
+    sub1.setdefault(unit_name, {'iso1': unit_iso, 'sub2': {}})
 
-# # clean up sole units
-# for country, units in levels.items():
-#     for unit, subunits in units.items():
-#         if len(subunits) == 1:
-#             levels[country][unit] = {}
-#
+    sub2 = sub1[unit_name]['sub2']
+    sub2.setdefault(subunit_name, {'iso2': subunit_iso})
+
+# clean up sole units
+for country, country_data in levels.items():
+    for unit1 in country_data['sub1'].values():
+        if len(unit1['sub2']) == 1:
+            unit1.pop('sub2')
+
 # # clean up sole subunits
 # for country, units in levels.items():
 #     print(units)
