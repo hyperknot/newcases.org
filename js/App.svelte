@@ -1,10 +1,13 @@
 <script>
+    import { onMount } from 'svelte';
+
     import Chart from './Chart.svelte'
     export let data;
+    let sortedDataEntries;
 
     const dataEntries = Object.entries(data);
 
-    const sortedDataEntries = dataEntries.sort(([country1, country1Data], [country2, country2Data]) => {
+    sortedDataEntries = dataEntries.sort(([country1, country1Data], [country2, country2Data]) => {
       const country1Cases = Object.values(country1Data);
       const country1maxNumber = parseInt(country1Cases[country1Cases.length - 1]);
       const country2Cases = Object.values(country2Data);
@@ -20,17 +23,18 @@
 
       return 0;
     });
-
 </script>
 
 <main>
     <div class="chart-container">
+    {#if data}
         {#each sortedDataEntries as dataEntry}
         <div class="chart-wrapper">
             <h3>{dataEntry[0]}</h3>
             <Chart data={dataEntry[1]} />
         </div>
         {/each}
+    {/if}
     </div>
 </main>
 
@@ -42,6 +46,6 @@
 	}
 
 	.chart-wrapper {
-	    width: 25%;
+	    width: 50%;
 	}
 </style>

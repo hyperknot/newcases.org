@@ -1,5 +1,6 @@
 <script>
     import * as d3 from 'd3';
+    import tip from 'd3-tip';
     import { onMount } from 'svelte';
 
     export let data;
@@ -13,9 +14,9 @@
         cases,
         newCases
       }
-    });
+    }).slice(-14);
 
-    const margin = ({top: 20, right: 0, bottom: 30, left: 40});
+    const margin = ({top: 20, right: 0, bottom: 50, left: 40});
 
     const width = 960;
     const height = 500;
@@ -37,12 +38,22 @@
 
     const xAxis = g => g
         .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x).tickSizeOuter(0));
+        .call(d3.axisBottom(x).tickSize(0).tickValues([]));
 
+
+    const tooltip = tip().attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .style('background', 'rgba(0, 0, 0, 0.8)')
+        .style('color', '#fff')
+        .style('padding', '8px')
+        .style('font-size', '14px')
+        .style('border-radius', '4px')
+        .html(d => `date: <b>${d.date}</b><br>new cases: <b>${d.newCases}</b>`);
 
     onMount(() => {
-
       const chartSvg = d3.select(chart).attr("viewBox", [0, 0, width, height]);
+
+      chartSvg.call(tooltip);
 
       chartSvg.append("g")
           .attr("fill", "#2ed0a8")
@@ -52,11 +63,16 @@
           .attr("x", d => x(d.date))
           .attr("y", d => y(d.newCases))
           .attr("height", d => y(0) - y(d.newCases))
-          .attr("width", x.bandwidth());
+          .attr("width", x.bandwidth())
+        .on('mouseover', tooltip.show)
+        .on('mouseout', tooltip.hide);
 
       chartSvg.append("g").call(xAxis);
 
       chartSvg.append("g").call(yAxis);
+
+
+
     });
 </script>
 
