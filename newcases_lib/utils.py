@@ -16,6 +16,6 @@ def read_json(file_path: pathlib.Path):
         return json.load(infile)
 
 
-def write_json(file_path: pathlib.Path, data, indent: bool = None):
+def write_json(file_path: pathlib.Path, data, indent: int = None):
     with file_path.open('w') as outfile:
         json.dump(data, outfile, ensure_ascii=False, indent=indent, allow_nan=False)
