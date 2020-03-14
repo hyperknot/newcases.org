@@ -72,4 +72,4 @@ for country, country_data in levels.items():
 #     levels[country_name][state_name].setdefault('-', dict())
 
 
-write_json(pathlib.Path('level.json'), levels, indent=2)
+write_json(pathlib.Path('levels.json'), levels, indent=2)
