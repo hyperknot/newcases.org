@@ -69,8 +69,6 @@ levels['United States of America']['sub1'] = {}
 levels['Canada']['sub1'] = {}
 levels['Australia']['sub1'] = {}
 
-# TODO Gibraltar missing from 50m
-
 for feature in states:
     prop = feature['properties']
     for key in prop:
