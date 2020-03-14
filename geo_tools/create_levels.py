@@ -21,7 +21,6 @@ iso_seen = set()
 
 for feature in subunits:
     prop = feature['properties']
-
     for key in prop:
         prop[key.lower()] = prop.pop(key)
 
@@ -33,9 +32,6 @@ for feature in subunits:
 
     subunit_name = prop['subunit']
     subunit_iso = prop['su_a3']
-
-    # if country_name not in ['Italy', 'Germany', 'France']:
-    #     continue
 
     levels.setdefault(country_name, {'iso0': country_iso, 'sub1': {}})
 
@@ -64,12 +60,36 @@ for country, country_data in levels.items():
         del country_data['sub1']
 
 
-# elif 'iso_3166_2' in prop:
-#     state_name = prop['name']
-#     state_iso = prop['iso_3166_2']
-#
-#     levels[country_name].setdefault(state_name, dict())
-#     levels[country_name][state_name].setdefault('-', dict())
+# substitute USA, Canada sub1 regions from states file
+levels['United States of America']['sub1'] = {}
+levels['Canada']['sub1'] = {}
+levels['Australia']['sub1'] = {}
 
+for feature in states:
+    prop = feature['properties']
+    for key in prop:
+        prop[key.lower()] = prop.pop(key)
+
+    country_name = prop['admin']
+    country_iso = prop['adm0_a3']
+
+    state_name = prop['name']
+    state_iso = prop['iso_3166_2']
+
+    if country_iso == 'USA':
+        levels['United States of America']['sub1'][state_name] = {
+            'iso1': state_iso,
+            'src': 'states',
+        }
+    elif country_iso == 'CAN':
+        levels['Canada']['sub1'][state_name] = {
+            'iso1': state_iso,
+            'src': 'states',
+        }
+    elif country_iso == 'AUS':
+        levels['Australia']['sub1'][state_name] = {
+            'iso1': state_iso,
+            'src': 'states',
+        }
 
 write_json(pathlib.Path('levels.json'), levels, indent=2)
