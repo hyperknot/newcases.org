@@ -17,6 +17,7 @@ states = read_json(geo_tools_dir / 'geojson' / 'states.geojson')['features']
 print(f'{len(states)} states')
 
 levels = dict()
+iso_seen = set()
 
 for feature in subunits:
     prop = feature['properties']
@@ -27,34 +28,40 @@ for feature in subunits:
     country_name = prop['admin']
     country_iso = prop['adm0_a3']
 
-    levels.setdefault(country_name, dict())
-
     unit_name = prop['geounit']
     unit_iso = prop['gu_a3']
 
     subunit_name = prop['subunit']
     subunit_iso = prop['su_a3']
 
-    levels[country_name].setdefault(unit_name, dict())
-    levels[country_name][unit_name].setdefault(subunit_name, dict())
+    # if country_name != 'Italy':
+    #     continue
 
-# clean up sole units
-for country, units in levels.items():
-    for unit, subunits in units.items():
-        if len(subunits) == 1:
-            levels[country][unit] = {}
+    levels.setdefault(country_name, {'iso0': country_iso, 'sub1': {}})
 
-# clean up sole subunits
-for country, units in levels.items():
-    if len(units) == 1:
-        levels[country] = {}
+    sub1 = levels[country_name]['sub1']
+    sub1.setdefault(unit_name, {'iso1': unit_iso, 'sub2': {}})
 
-    # elif 'iso_3166_2' in prop:
-    #     state_name = prop['name']
-    #     state_iso = prop['iso_3166_2']
-    #
-    #     levels[country_name].setdefault(state_name, dict())
-    #     levels[country_name][state_name].setdefault('-', dict())
+    sub2 = sub1[unit_name]['sub2']
+    sub2.setdefault(subunit_name, {'iso2': subunit_iso})
+
+# clean up sub2
+for country, country_data in levels.items():
+    for unit1 in country_data['sub1'].values():
+        if len(unit1['sub2']) == 1:
+            unit1.pop('sub2')
+
+# clean up sub1
+# for country, country_data in levels.items():
+#     if len(country_data['sub1']) == 1:
+#         country_data.pop('sub1')
+
+# elif 'iso_3166_2' in prop:
+#     state_name = prop['name']
+#     state_iso = prop['iso_3166_2']
+#
+#     levels[country_name].setdefault(state_name, dict())
+#     levels[country_name][state_name].setdefault('-', dict())
 
 
-write_json(pathlib.Path('levels.json'), levels, indent=2)
+write_json(pathlib.Path('l2.json'), levels, indent=2)
