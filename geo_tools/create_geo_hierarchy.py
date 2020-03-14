@@ -6,22 +6,36 @@ from newcases_lib.utils import read_json
 countries = read_json(geo_tools_dir / 'geojson' / 'countries.geojson')['features']
 print(f'{len(countries)} countries')
 
-map_units = read_json(geo_tools_dir / 'geojson' / 'map_units.geojson')['features']
-print(f'{len(map_units)} map_units')
+units = read_json(geo_tools_dir / 'geojson' / 'units.geojson')['features']
+print(f'{len(units)} units')
 
-map_subunits = read_json(geo_tools_dir / 'geojson' / 'map_subunits.geojson')['features']
-print(f'{len(map_subunits)} map_subunits')
+subunits = read_json(geo_tools_dir / 'geojson' / 'subunits.geojson')['features']
+print(f'{len(subunits)} subunits')
+
+states = read_json(geo_tools_dir / 'geojson' / 'states.geojson')['features']
+print(f'{len(states)} states')
 
 seen = set()
 
-for feature in map_subunits:
+for feature in states + subunits:
     prop = feature['properties']
 
-    country_name = prop['ADMIN']
-    country_iso = prop['ADM0_A3']
+    for key in prop:
+        prop[key.lower()] = prop.pop(key)
 
-    unit_name = prop['GEOUNIT']
-    unit_iso = prop['GU_A3']
+    country_name = prop['admin']
+    country_iso = prop['adm0_a3']
 
-    subunit_name = prop['SUBUNIT']
-    subunit_iso = prop['SU_A3']
+    if 'subunit' in prop:
+        unit_name = prop['geounit']
+        unit_iso = prop['gu_a3']
+
+        subunit_name = prop['subunit']
+        subunit_iso = prop['su_a3']
+
+    elif 'iso_3166_2' in prop:
+        state_name = prop['name']
+        state_iso = prop['iso_3166_2']
+
+    else:
+        print(f'Wrong feature: {prop}')
