@@ -1,10 +1,12 @@
 *.egg-info/
 __pycache__/
+node_modules/
 
-/node_modules
 /.idea
 /venv
 /tmp.csv
 
 .DS_Store
 /public/build
+/map_convert_tools/geojson
+/map_convert_tools/shp
