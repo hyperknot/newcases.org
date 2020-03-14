@@ -1,6 +1,10 @@
 *.egg-info/
 __pycache__/
 
+/node_modules
 /.idea
 /venv
 /tmp.csv
+
+.DS_Store
+/public/build
