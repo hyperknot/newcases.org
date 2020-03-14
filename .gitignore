@@ -10,3 +10,4 @@ node_modules/
 /geo_tools/geojson
 /geo_tools/shp
 /.idea/workspace.xml
+/geo_tools/levels.json
