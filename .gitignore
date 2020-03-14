@@ -9,3 +9,4 @@ node_modules/
 /public/build
 /geo_tools/geojson
 /geo_tools/shp
+/.idea/workspace.xml
