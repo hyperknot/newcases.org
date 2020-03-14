@@ -14,5 +14,13 @@ def get_github_csv():
 
 
 def parse_csv(text):
-    records = csv.DictReader(io.StringIO(text))
-    return records
+    reader = csv.DictReader(io.StringIO(text), restkey='x_restkey', restval='x_restval')
+
+    for record in reader:
+        # check for too many keys
+        if 'x_restkey' in record:
+            raise ValueError(f'too many items in line {reader.line_num}')
+
+        # check for too few keys:
+        if 'x_restval' in record.values():
+            raise ValueError(f'too few items in line {reader.line_num}')
