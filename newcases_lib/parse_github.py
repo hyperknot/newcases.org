@@ -17,6 +17,13 @@ def get_github_csv():
 def parse_csv(text):
     reader = csv.DictReader(io.StringIO(text), restkey='x_restkey', restval='x_restval')
 
+    if reader.fieldnames[:4] != ['Province/State', 'Country/Region', 'Lat', 'Long']:
+        raise ValueError('Wrong field names')
+
+    date_map = create_date_map(reader.fieldnames[4:])
+
+    data = {}
+
     for record in reader:
         # check for too many keys
         if 'x_restkey' in record:
@@ -26,11 +33,15 @@ def parse_csv(text):
         if 'x_restval' in record.values():
             raise ValueError(f'Too few items in line {reader.line_num}')
 
-    if reader.fieldnames[:4] != ['Province/State', 'Country/Region', 'Lat', 'Long']:
-        raise ValueError('Wrong field names')
+        country_data = {}
 
-    date_map = create_date_map(reader.fieldnames[4:])
-    print(date_map)
+        for old_date, new_date in date_map.items():
+            country_data[new_date] = record[old_date]
+
+        country_name = record['Country/Region']
+        data[country_name] = country_data
+
+    return data
 
 
 def create_date_map(fieldnames):

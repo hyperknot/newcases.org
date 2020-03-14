@@ -6,5 +6,5 @@ python3 -m venv venv
 
 source venv/bin/activate
 
-pip install -e parse_github
+pip install -e newcases_lib
 

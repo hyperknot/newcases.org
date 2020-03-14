@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+import json
 
-import parse_github
+from newcases_lib import parse_github
 
 # csv_text = parse_github.get_github_csv()
 
@@ -11,4 +12,8 @@ import parse_github
 with open('tmp.csv') as infile:
     csv_text = infile.read()
 
-csv_data = parse_github.parse_csv(csv_text)
+data = parse_github.parse_csv(csv_text)
+
+
+with open('data/country_data.json', 'w') as outfile:
+    json.dump(data, outfile, ensure_ascii=False, indent=2)
