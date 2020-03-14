@@ -8,5 +8,5 @@ node_modules/
 
 .DS_Store
 /public/build
-/map_convert_tools/geojson
-/map_convert_tools/shp
+/geo_tools/geojson
+/geo_tools/shp
