@@ -1,81 +1,47 @@
 <script>
-    import * as d3 from 'd3';
-    import { onMount } from 'svelte';
-    import data from '../data/country_data.json';
+    import Chart from './Chart.svelte'
+    export let data;
 
-    const thaiEntries = Object.entries(data.Thailand);
-    const thaiData = thaiEntries.map(([date, cases], index) => {
-      const newCases = index > 0 ? cases - thaiEntries[index - 1][1] : parseInt(cases);
-      return {
-        date,
-        cases,
-        newCases
+    const dataEntries = Object.entries(data);
+
+    const sortedDataEntries = dataEntries.sort(([country1, country1Data], [country2, country2Data]) => {
+      const country1Cases = Object.values(country1Data);
+      const country1maxNumber = parseInt(country1Cases[country1Cases.length - 1]);
+      const country2Cases = Object.values(country2Data);
+      const country2maxNumber = parseInt(country2Cases[country2Cases.length - 1]);
+
+      if (country1maxNumber > country2maxNumber) {
+        return -1;
       }
+
+      if (country1maxNumber < country2maxNumber) {
+        return 1;
+      }
+
+      return 0;
     });
 
-    const margin = ({top: 20, right: 0, bottom: 30, left: 40});
-
-    const width = 960;
-    const height = 500;
-
-    const y = d3.scaleLinear()
-        .domain([0, d3.max(thaiData, d => parseInt(d.newCases))])
-        .range([height - margin.bottom, margin.top]);
-
-    const x = d3.scaleBand()
-        .domain(thaiData.map(d => d.date))
-        .rangeRound([margin.left, width - margin.right])
-        .padding(0.1);
-
-
-    const yAxis = g => g
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y))
-        .call(g => g.select(".domain").remove());
-
-    const xAxis = g => g
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x).tickSizeOuter(0));
-
-    let chart;
-
-
-    onMount(() => {
-
-      const chartSvg = d3.select(chart).attr("viewBox", [0, 0, width, height]);
-
-      chartSvg.append("g")
-          .attr("fill", "steelblue")
-        .selectAll("rect")
-        .data(thaiData)
-        .join("rect")
-          .attr("x", d => x(d.date))
-          .attr("y", d => y(d.newCases))
-          .attr("height", d => y(0) - y(d.newCases))
-          .attr("width", x.bandwidth());
-
-      chartSvg.append("g").call(xAxis);
-
-      chartSvg.append("g").call(yAxis);
-
-
-    });
 </script>
 
 <main>
-    <svg class="chart" bind:this={chart}></svg>
+    <div class="chart-container">
+        {#each sortedDataEntries as dataEntry}
+        <div class="chart-wrapper">
+            <h3>{dataEntry[0]}</h3>
+            <Chart data={dataEntry[1]} />
+        </div>
+        {/each}
+    </div>
 </main>
 
 
 <style>
-	.chart :global(div) {
-		font: 10px sans-serif;
-		background-color: steelblue;
-		text-align: right;
-		padding: 3px;
-		margin: 1px;
-		color: white;
+	.chart-container {
+	    display: flex;
+	    flex-wrap: wrap;
 	}
 
-
+	.chart-wrapper {
+	    width: 25%;
+	}
 </style>
