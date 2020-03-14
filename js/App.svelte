@@ -1,30 +1,81 @@
 <script>
-	export let name;
+    import * as d3 from 'd3';
+    import { onMount } from 'svelte';
+    import data from '../data/country_data.json';
+
+    const thaiEntries = Object.entries(data.Thailand);
+    const thaiData = thaiEntries.map(([date, cases], index) => {
+      const newCases = index > 0 ? cases - thaiEntries[index - 1][1] : parseInt(cases);
+      return {
+        date,
+        cases,
+        newCases
+      }
+    });
+
+    const margin = ({top: 20, right: 0, bottom: 30, left: 40});
+
+    const width = 960;
+    const height = 500;
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(thaiData, d => parseInt(d.newCases))])
+        .range([height - margin.bottom, margin.top]);
+
+    const x = d3.scaleBand()
+        .domain(thaiData.map(d => d.date))
+        .rangeRound([margin.left, width - margin.right])
+        .padding(0.1);
+
+
+    const yAxis = g => g
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y))
+        .call(g => g.select(".domain").remove());
+
+    const xAxis = g => g
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).tickSizeOuter(0));
+
+    let chart;
+
+
+    onMount(() => {
+
+      const chartSvg = d3.select(chart).attr("viewBox", [0, 0, width, height]);
+
+      chartSvg.append("g")
+          .attr("fill", "steelblue")
+        .selectAll("rect")
+        .data(thaiData)
+        .join("rect")
+          .attr("x", d => x(d.date))
+          .attr("y", d => y(d.newCases))
+          .attr("height", d => y(0) - y(d.newCases))
+          .attr("width", x.bandwidth());
+
+      chartSvg.append("g").call(xAxis);
+
+      chartSvg.append("g").call(yAxis);
+
+
+    });
 </script>
 
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+    <svg class="chart" bind:this={chart}></svg>
 </main>
 
+
 <style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
+	.chart :global(div) {
+		font: 10px sans-serif;
+		background-color: steelblue;
+		text-align: right;
+		padding: 3px;
+		margin: 1px;
+		color: white;
 	}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
 
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
 </style>
