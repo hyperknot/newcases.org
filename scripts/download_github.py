@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json
 
-from newcases_lib import parse_github
+from newcases_lib import download_github
 
 # csv_text = parse_github.get_github_csv()
 
@@ -12,7 +12,7 @@ from newcases_lib import parse_github
 with open('tmp.csv') as infile:
     csv_text = infile.read()
 
-data = parse_github.parse_csv(csv_text)
+data = download_github.parse_csv(csv_text)
 
 
 with open('data/country_data.json', 'w') as outfile:
