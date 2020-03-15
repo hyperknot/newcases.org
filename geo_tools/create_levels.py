@@ -25,7 +25,7 @@ for feature in subunits:
         prop[key.lower()] = prop.pop(key)
 
     country_name = prop['admin']
-    country_iso = prop['adm0_a3']
+    sub_country_iso = prop['adm0_a3']
 
     unit_name = prop['geounit']
     unit_iso = prop['gu_a3']
@@ -34,10 +34,12 @@ for feature in subunits:
     subunit_iso = prop['su_a3']
 
     pop = prop['pop_est']
+    scalerank = prop['scalerank']
+
     if pop < 1000:
         continue
 
-    levels.setdefault(country_name, {'iso0': country_iso, 'sub1': {}})
+    levels.setdefault(country_name, {'iso0': sub_country_iso, 'sub1': {}})
 
     sub1 = levels[country_name]['sub1']
     sub1.setdefault(unit_name, {'iso1': unit_iso, 'src': 'unit', 'sub2': {}})
@@ -46,13 +48,13 @@ for feature in subunits:
     sub2.setdefault(subunit_name, {'iso2': subunit_iso, 'src': 'subunit'})
 
 # clean up sub2
-for country, country_data in levels.items():
+for sub_country, country_data in levels.items():
     for data1 in country_data['sub1'].values():
         if len(data1['sub2']) == 1:
             del data1['sub2']
 
 # clean up sub1
-for country, country_data in levels.items():
+for sub_country, country_data in levels.items():
     sub1 = country_data['sub1']
 
     if len(sub1) != 1:
@@ -64,10 +66,10 @@ for country, country_data in levels.items():
         del country_data['sub1']
 
 
-# substitute USA, Canada sub1 regions from states file
-levels['United States of America']['sub1'] = {}
-levels['Canada']['sub1'] = {}
-levels['Australia']['sub1'] = {}
+# substitute some countries sub1 level from states file
+substitute_countries = ['United States of America', 'Canada', 'Australia']
+for country_name in substitute_countries:
+    levels[country_name]['sub1'] = {}
 
 for feature in states:
     prop = feature['properties']
@@ -75,25 +77,26 @@ for feature in states:
         prop[key.lower()] = prop.pop(key)
 
     country_name = prop['admin']
-    country_iso = prop['adm0_a3']
+    sub_country_iso = prop['adm0_a3']
 
     state_name = prop['name']
     state_iso = prop['iso_3166_2']
 
-    if country_iso == 'USA':
-        levels['United States of America']['sub1'][state_name] = {
-            'iso1': state_iso,
-            'src': 'states',
-        }
-    elif country_iso == 'CAN':
-        levels['Canada']['sub1'][state_name] = {
-            'iso1': state_iso,
-            'src': 'states',
-        }
-    elif country_iso == 'AUS':
-        levels['Australia']['sub1'][state_name] = {
-            'iso1': state_iso,
-            'src': 'states',
-        }
+    scalerank = prop['scalerank']
+    if scalerank > 6:
+        # print(country_name, state_name, scalerank)
+        continue
+
+    for sub_country_name in substitute_countries:
+        sub_country = levels[sub_country_name]
+        sub_country_iso = sub_country_iso
+        sub_country_sub1 = sub_country['sub1']
+
+        if sub_country_name == country_name:
+            sub_country_sub1[state_name] = {
+                'iso1': state_iso,
+                'src': 'states',
+            }
+
 
 write_json(pathlib.Path('levels.json'), levels, indent=2)
