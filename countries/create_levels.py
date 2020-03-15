@@ -4,6 +4,8 @@ import pathlib
 from newcases_lib.config import countries_dir
 from newcases_lib.utils import read_json, write_json
 
+ADD_STATES = ['United States of America', 'Canada', 'Australia', 'China']
+
 countries = read_json(countries_dir / 'geojson' / 'countries.geojson')['features']
 print(f'{len(countries)} countries')
 
@@ -36,8 +38,8 @@ for feature in subunits:
     pop = prop['pop_est']
     scalerank = prop['scalerank']
 
-    # if pop < 1000:
-        # continue
+    if pop < 1000:
+        continue
 
     levels.setdefault(country_name, {'iso0': sub_country_iso, 'sub1': {}})
 
@@ -67,8 +69,7 @@ for sub_country, country_data in levels.items():
 
 
 # substitute some countries sub1 level from states file
-substitute_countries = ['United States of America', 'Canada', 'Australia']
-for country_name in substitute_countries:
+for country_name in ADD_STATES:
     levels[country_name]['sub1'] = {}
 
 for feature in states:
@@ -87,7 +88,7 @@ for feature in states:
         # print(country_name, state_name, scalerank)
         continue
 
-    for sub_country_name in substitute_countries:
+    for sub_country_name in ADD_STATES:
         sub_country = levels[sub_country_name]
         sub_country_iso = sub_country_iso
         sub_country_sub1 = sub_country['sub1']
@@ -99,4 +100,4 @@ for feature in states:
             }
 
 
-write_json(pathlib.Path('levels.json'), levels, indent=2)
+write_json(pathlib.Path('country_levels.json'), levels, indent=2)
