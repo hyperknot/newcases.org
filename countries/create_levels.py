@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 import pathlib
 
-from newcases_lib.config import geo_tools_dir
+from newcases_lib.config import countries_dir
 from newcases_lib.utils import read_json, write_json
 
-countries = read_json(geo_tools_dir / 'geojson' / 'countries.geojson')['features']
+countries = read_json(countries_dir / 'geojson' / 'countries.geojson')['features']
 print(f'{len(countries)} countries')
 
-units = read_json(geo_tools_dir / 'geojson' / 'units.geojson')['features']
+units = read_json(countries_dir / 'geojson' / 'units.geojson')['features']
 print(f'{len(units)} units')
 
-subunits = read_json(geo_tools_dir / 'geojson' / 'subunits.geojson')['features']
+subunits = read_json(countries_dir / 'geojson' / 'subunits.geojson')['features']
 print(f'{len(subunits)} subunits')
 
-states = read_json(geo_tools_dir / 'geojson' / 'states.geojson')['features']
+states = read_json(countries_dir / 'geojson' / 'states.geojson')['features']
 print(f'{len(states)} states')
 
 levels = dict()
@@ -36,8 +36,8 @@ for feature in subunits:
     pop = prop['pop_est']
     scalerank = prop['scalerank']
 
-    if pop < 1000:
-        continue
+    # if pop < 1000:
+        # continue
 
     levels.setdefault(country_name, {'iso0': sub_country_iso, 'sub1': {}})
 
