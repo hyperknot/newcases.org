@@ -16,6 +16,7 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
+    "country-levels": "https://github.com/hyperknot/country-levels/releases/download/v2.2.0/export_medium.tgz",
     "d3": "^5.15.0",
     "d3-tip": "^0.9.1",
     "page": "^1.11.5",
