@@ -1,4 +1,5 @@
 import csv
+import datetime
 import io
 
 import requests
@@ -61,3 +62,66 @@ def get_iso_lookup():
         lookup[key] = iso1_data['countrylevel_id']
 
     return lookup
+
+
+def get_timeseries():
+    iso_lookup = get_iso_lookup()
+
+    urls = {
+        'confirmed': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
+        'deaths': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv',
+        'recovered': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
+    }
+
+    for kind, url in urls.items():
+        data = parse_jhu_csv(url, iso_lookup)
+
+
+def parse_jhu_csv(url, iso_lookup):
+    r = requests.get(url)
+    r.raise_for_status()
+
+    reader = csv.DictReader(io.StringIO(r.text), restkey='x_restkey', restval='x_restval')
+
+    assert reader.fieldnames[:4] == ['Province/State', 'Country/Region', 'Lat', 'Long']
+
+    data = dict()
+
+    for record in reader:
+        # check for too many keys
+        if 'x_restkey' in record:
+            raise ValueError(f'Too many items in line {reader.line_num}')
+
+        # check for too few keys:
+        if 'x_restval' in record.values():
+            raise ValueError(f'Too few items in line {reader.line_num}')
+
+        country = record['Country/Region']
+        state = record['Province/State']
+        key = f'{country}#{state}'
+
+        if country == 'US':
+            continue
+
+        if country in ['Diamond Princess', 'MS Zaandam']:
+            continue
+
+        if state:
+            continue
+
+        assert key in iso_lookup
+
+        countrylevel_id = iso_lookup[key]
+
+        case_data = {}
+        for key, value in record.items():
+            if key in ['Province/State', 'Country/Region', 'Lat', 'Long']:
+                continue
+            dt = datetime.datetime.strptime(key, '%m/%d/%y')
+            iso_date = dt.date().isoformat()
+
+            case_data[iso_date] = int(value)
+
+        data[countrylevel_id] = case_data
+
+    return data
