@@ -1,10 +1,34 @@
 import csv
 import datetime
 import io
+import pathlib
 
 import requests
 
 from newcases_lib.config import iso1_codes
+from newcases_lib.utils import write_json
+
+
+def get_timeseries():
+    iso_lookup = get_iso_lookup()
+
+    urls = {
+        'confirmed': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
+        'deaths': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv',
+        'recovered': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
+    }
+
+    mixed = dict()
+
+    for kind, url in urls.items():
+        data = parse_jhu_csv(url, iso_lookup)
+        for countrylevel_id, case_data in data.items():
+            mixed.setdefault(countrylevel_id, dict())
+            for date, number in case_data.items():
+                mixed[countrylevel_id].setdefault(date, dict())
+                mixed[countrylevel_id][date][kind] = number
+
+    write_json(pathlib.Path('mixed.json'), mixed, 2)
 
 
 def get_iso_lookup():
@@ -62,19 +86,6 @@ def get_iso_lookup():
         lookup[key] = iso1_data['countrylevel_id']
 
     return lookup
-
-
-def get_timeseries():
-    iso_lookup = get_iso_lookup()
-
-    urls = {
-        'confirmed': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
-        'deaths': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv',
-        'recovered': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
-    }
-
-    for kind, url in urls.items():
-        data = parse_jhu_csv(url, iso_lookup)
 
 
 def parse_jhu_csv(url, iso_lookup):
