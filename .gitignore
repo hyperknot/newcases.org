@@ -1,10 +1,10 @@
 *.egg-info/
 __pycache__/
 node_modules/
-
-/venv
-/tmp.csv
+venv/
 
 .DS_Store
+
 /public/build
 /.idea/workspace.xml
+/export

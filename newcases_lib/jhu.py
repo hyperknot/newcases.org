@@ -5,7 +5,7 @@ import pathlib
 
 import requests
 
-from newcases_lib.config import iso1_codes
+from newcases_lib.country_levels import levels
 from newcases_lib.utils import write_json
 
 
@@ -28,7 +28,7 @@ def get_timeseries():
                 mixed[countrylevel_id].setdefault(date, dict())
                 mixed[countrylevel_id][date][kind] = number
 
-    write_json(pathlib.Path('mixed.json'), mixed, 2)
+    return mixed
 
 
 def get_iso_lookup():
@@ -82,7 +82,7 @@ def get_iso_lookup():
         if state:
             continue
 
-        iso1_data = iso1_codes[country_code]
+        iso1_data = levels['iso1'][country_code]
         lookup[key] = iso1_data['countrylevel_id']
 
     return lookup
@@ -118,6 +118,7 @@ def parse_jhu_csv(url, iso_lookup):
             continue
 
         if state:
+            print(key)
             continue
 
         assert key in iso_lookup
@@ -132,6 +133,9 @@ def parse_jhu_csv(url, iso_lookup):
             iso_date = dt.date().isoformat()
 
             case_data[iso_date] = int(value)
+
+        if countrylevel_id in data:
+            print(f'already seen: {countrylevel_id}')
 
         data[countrylevel_id] = case_data
 
