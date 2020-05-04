@@ -16,3 +16,4 @@ for clid, data in timeseries_data.items():
 
 export_dir.mkdir(parents=True, exist_ok=True)
 write_json(export_dir / 'world.geojson', featurecollection)
+write_json(export_dir / 'timeseries.json', timeseries_data, separators=(',', ':'))

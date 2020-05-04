@@ -10,7 +10,6 @@
   router(
     '/country/:id',
     (ctx, next) => {
-      console.log(ctx, next)
       params = ctx.params
       next()
     },

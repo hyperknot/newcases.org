@@ -6,4 +6,6 @@ lib_dir = pathlib.Path(__file__).parent.resolve()
 
 root_dir = lib_dir.parent
 country_levels_dir = root_dir / 'node_modules' / 'country-levels'
-export_dir = root_dir / 'export'
+
+public_dir = root_dir / 'public'
+export_dir = public_dir / 'export'
