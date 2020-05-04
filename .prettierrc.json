@@ -4,5 +4,5 @@
   "printWidth": 100,
   "trailingComma": "es5",
   "svelteBracketNewLine": true,
-  "svelteSortOrder" : "scripts-markup-styles"
+  "svelteSortOrder": "scripts-markup-styles"
 }
