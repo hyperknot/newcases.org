@@ -8,3 +8,4 @@ venv/
 /public/build
 /.idea/workspace.xml
 /public/export
+/stats.html
