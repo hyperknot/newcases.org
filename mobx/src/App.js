@@ -1,16 +1,24 @@
 import { observer } from 'mobx-react-lite'
-import React from 'react'
-import { Counter } from './components/counter.js'
+import React, { useEffect } from 'react'
 
 import './app.scss'
+import { Charts } from './components/charts'
 import { useStores } from './hooks/use-stores'
 
 export const App = observer(() => {
   const { appStore } = useStores()
 
+  useEffect(() => {
+    try {
+      appStore.loadData()
+    } catch (e) {
+      console.log('a')
+    }
+  }, [])
+
   return (
     <main>
-      {appStore.chartsVisible && <div id="charts">charts</div>}
+      {appStore.chartsVisible && <Charts />}
       {appStore.mapVisible && <div id="map">map</div>}
     </main>
   )
