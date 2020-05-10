@@ -1,15 +1,8 @@
 import React from 'react'
-// import logo from './logo.svg'
-import './App.css'
-import { DataStoreProvider } from './context.js'
-import MyComponent from './mycomponent.js'
+import { Counter } from './components/counter.js'
 
-function App() {
-  return (
-    <DataStoreProvider>
-      <MyComponent />
-    </DataStoreProvider>
-  )
-}
-
-export default App
+export const App = () => (
+  <main>
+    <Counter />
+  </main>
+)

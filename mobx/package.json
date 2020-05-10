@@ -1,6 +1,7 @@
 {
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-decorators": "^7.8.3",
     "customize-cra": "^0.9.1",
     "mobx": "^5.15.4",
     "mobx-react-lite": "^2.0.6",
