@@ -1,0 +1,14 @@
+main {
+  display: flex;
+  height: 100vh;
+}
+
+#charts {
+  flex-grow: 1;
+  background-color: #ddd;
+}
+
+#map {
+  flex-grow: 3;
+  background-color: #eee;
+}
